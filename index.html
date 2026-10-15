@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BlogSpace | My Blog App</title>
+<style>
+:root{--ink:#172033;--muted:#64748b;--brand:#4f46e5;--brand2:#7c3aed;--paper:#f6f7fb;--line:#e5e7eb}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--paper);color:var(--ink)}
+header{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+.nav{max-width:1050px;margin:auto;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.logo{font-weight:800;font-size:22px;color:var(--brand)}nav{display:flex;gap:7px;flex-wrap:wrap}
+button,.btn{border:0;border-radius:10px;padding:10px 13px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block}
+nav button{background:transparent;color:#475569}nav button.active, .primary{background:var(--brand);color:white}
+main{max-width:1050px;margin:28px auto;padding:0 18px}
+.hero{background:linear-gradient(130deg,#4338ca,#8b5cf6);color:white;border-radius:22px;padding:34px 26px;margin-bottom:22px}
+.hero h1{font-size:clamp(30px,6vw,48px);line-height:1.05;margin:0 0 12px}.hero p{max-width:600px;line-height:1.6;color:#ede9fe}
+.section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin-top:16px}
+.card{background:white;border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 5px 20px #17203308}
+.tag{font-size:12px;color:var(--brand);font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+.card h3{margin:9px 0}.muted{color:var(--muted);line-height:1.6}.form-card{max-width:580px;margin:auto}
+label{display:block;font-weight:700;margin:13px 0 6px}input,textarea{width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;font:inherit;background:white}textarea{min-height:125px;resize:vertical}
+form button{margin-top:16px;width:100%}.notice{background:#eef2ff;border:1px solid #c7d2fe;padding:12px 14px;border-radius:12px;color:#3730a3;margin-top:14px}
+footer{text-align:center;padding:30px 16px;color:var(--muted);font-size:13px}
+.empty{text-align:center;padding:30px;color:var(--muted)}
+@media(max-width:520px){.nav{align-items:flex-start}.logo{width:100%}nav button{padding:9px 10px}.hero{padding:27px 20px}main{margin-top:18px}}
+</style>
+</head>
+<body>
+<header><div class="nav"><div class="logo">✦ BlogSpace</div><nav aria-label="Main navigation">
+<button class="active" data-page="home">Home</button><button data-page="login">Login</button><button data-page="register">Register</button><button data-page="dashboard">Dashboard</button><button data-page="create">Create Blog</button>
+</nav></div></header>
+<main id="app"></main>
+<footer>Built as a beginner Frontend Development project · HTML, CSS & JavaScript</footer>
+<script>
+const app=document.getElementById('app');
+const starterPosts=[
+ {title:'Welcome to BlogSpace',category:'Getting Started',body:'This is a simple blog application built with HTML, CSS, and JavaScript. Use Create Blog to add your own post.',author:'BlogSpace Team'},
+ {title:'Why I Am Learning Web Development',category:'Learning',body:'Web development lets us turn ideas into websites. Start with HTML for structure, CSS for style, and JavaScript for interactions.',author:'Student Blogger'},
+ {title:'Small Steps, Big Progress',category:'Motivation',body:'Practice a little every day, test your work, and keep improving. Every project is a chance to learn something new.',author:'Student Blogger'}
+];
+let posts=JSON.parse(localStorage.getItem('blogspace_posts')||'null')||starterPosts;
+function save(){localStorage.setItem('blogspace_posts',JSON.stringify(posts))}
+function go(page){document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===page));render(page);window.scrollTo({top:0,behavior:'smooth'})}
+function safe(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function cards(){return posts.map((p,i)=>`<article class="card"><div class="tag">${safe(p.category||'Blog')}</div><h3>${safe(p.title)}</h3><p class="muted">${safe(p.body)}</p><p class="muted"><small>By ${safe(p.author||'Guest Author')}</small></p><button class="primary" onclick="readPost(${i})">Read post</button></article>`).join('')}
+function readPost(i){const p=posts[i];app.innerHTML=`<button onclick="go('home')">← Back to Home</button><article class="card" style="margin-top:16px"><div class="tag">${safe(p.category||'Blog')}</div><h1>${safe(p.title)}</h1><p class="muted">By ${safe(p.author||'Guest Author')}</p><p style="line-height:1.8;white-space:pre-wrap">${safe(p.body)}</p></article>`}
+function render(page='home'){
+if(page==='home'){app.innerHTML=`<section class="hero"><h1>Ideas worth<br>sharing.</h1><p>Welcome to BlogSpace — a clean, responsive place to read stories, share ideas, and learn together.</p><button class="primary" onclick="go('create')">＋ Write a blog</button></section><div class="section-head"><div><h2>Latest stories</h2><p class="muted">Explore the newest posts from our community.</p></div></div><section class="grid">${cards()}</section>`}
+else if(page==='login'){app.innerHTML=`<section class="card form-card"><div class="tag">Welcome back</div><h1>Login</h1><p class="muted">Enter your details to preview the login form.</p><form id="loginForm"><label for="loginEmail">Email</label><input id="loginEmail" type="email" placeholder="you@example.com" required><label for="loginPassword">Password</label><input id="loginPassword" type="password" placeholder="Enter password" required minlength="4"><button class="primary">Login</button></form><div id="loginMsg"></div><p class="muted">New here? <a href="#" onclick="go('register');return false">Create an account</a></p></section>`;document.getElementById('loginForm').onsubmit=e=>{e.preventDefault();document.getElementById('loginMsg').innerHTML='<div class="notice">Demo only: form validated successfully. No account or password is sent anywhere.</div>'}}
+else if(page==='register'){app.innerHTML=`<section class="card form-card"><div class="tag">Join the community</div><h1>Create account</h1><p class="muted">This is a front-end registration demo.</p><form id="registerForm"><label for="regName">Full name</label><input id="regName" required placeholder="Your name"><label for="regEmail">Email</label><input id="regEmail" type="email" required placeholder="you@example.com"><label for="regPassword">Password</label><input id="regPassword" type="password" minlength="4" required placeholder="At least 4 characters"><button class="primary">Register</button></form><div id="registerMsg"></div></section>`;document.getElementById('registerForm').onsubmit=e=>{e.preventDefault();document.getElementById('registerMsg').innerHTML='<div class="notice">Demo only: form validated successfully. Real account creation needs a backend.</div>'}}
+else if(page==='dashboard'){app.innerHTML=`<div class="section-head"><div><div class="tag">Your workspace</div><h1>Dashboard</h1><p class="muted">Manage your blog project from one place.</p></div><button class="primary" onclick="go('create')">＋ Create Blog</button></div><section class="grid"><div class="card"><div class="tag">Published posts</div><h2>${posts.length}</h2><p class="muted">Posts currently shown on Home.</p></div><div class="card"><div class="tag">Project status</div><h2>In progress</h2><p class="muted">Frontend demo with responsive layout and interactive forms.</p></div><div class="card"><div class="tag">Quick action</div><h3>Share an idea</h3><p class="muted">Create a post and it will appear on the Home page.</p><button class="primary" onclick="go('create')">Write a post</button></div></section><h2>Your posts</h2><section class="grid">${cards()}</section>`}
+else if(page==='create'){app.innerHTML=`<section class="card form-card"><div class="tag">Tell your story</div><h1>Create a blog</h1><p class="muted">Add a title, category, and content. Your post is saved in this browser.</p><form id="blogForm"><label for="blogTitle">Blog title</label><input id="blogTitle" required maxlength="90" placeholder="Give your post a title"><label for="blogCategory">Category</label><input id="blogCategory" required maxlength="35" placeholder="e.g. Technology"><label for="blogAuthor">Author name</label><input id="blogAuthor" required maxlength="45" placeholder="Your name"><label for="blogBody">Content</label><textarea id="blogBody" required minlength="10" placeholder="Write your blog here..."></textarea><button class="primary">Publish blog</button></form><div id="blogMsg"></div></section>`;document.getElementById('blogForm').onsubmit=e=>{e.preventDefault();posts.unshift({title:document.getElementById('blogTitle').value,category:document.getElementById('blogCategory').value,author:document.getElementById('blogAuthor').value,body:document.getElementById('blogBody').value});save();document.getElementById('blogMsg').innerHTML='<div class="notice">Your post was published in this browser. Open Home or Dashboard to see it.</div>';document.getElementById('blogForm').reset()}}
+}
+document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>go(b.dataset.page)));
+render();
+</script>
+</body>
+</html>
